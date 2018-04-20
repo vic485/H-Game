@@ -18,9 +18,13 @@ Clone repository and add with Visual Studio or through .NET CLI
 ```cs
     var client = new HGameClient(new HGameConfig
     {
-        SteamKey = "YOUR_STEAM_KEY"
+        SteamKey = "YOUR_STEAM_KEY",
+        WowsKey = "YOUR_WAR_GAMING_KEY"
     });
 
-    var search = await client.Steam.RecentGamesAsync("12345678901234").ConfigureAwait(false);
-    Console.WriteLine(search.RecentGames.TotalCount);
+    var steamSearch = await client.Steam.RecentGamesAsync("12345678901234").ConfigureAwait(false);
+    Console.WriteLine(steamSearch.RecentGames.TotalCount);
+
+    var wowsSearch = await client.Wows.GetPlayersAsync(Region.Na, "Player Nickname").ConfigureAwait(false);
+    Console.WriteLine(wowsSearch.PlayersList[0].AccountId);
 ```
