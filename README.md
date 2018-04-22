@@ -25,6 +25,7 @@ Clone repository and add with Visual Studio or through .NET CLI
     var steamSearch = await client.Steam.RecentGamesAsync("12345678901234").ConfigureAwait(false);
     Console.WriteLine(steamSearch.RecentGames.TotalCount);
 
-    var wowsSearch = await client.Wows.GetPlayersAsync(Region.Na, "Player Nickname").ConfigureAwait(false);
+    List<string> usernames = new List<string>(new string[] { "Player Nickname" });
+    var wowsSearch = await client.Wows.GetPlayersAsync(Region.Na, usernames).ConfigureAwait(false);
     Console.WriteLine(wowsSearch.PlayersList[0].AccountId);
 ```

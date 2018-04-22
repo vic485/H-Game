@@ -15,19 +15,31 @@ namespace HGame.Wows
         public WowsClient(string clientId) => key = clientId;
 
         // TODO: Api Calls
-        public async Task<Players> GetPlayersAsync(Region region, string username)
+        /// <summary>Find a user's account id</summary>
+        /// <param name="region">Server region to search</param>
+        /// <param name="usernames">List of usernames</param>
+        public async Task<Players> GetPlayersAsync(Region region, List<string> usernames)
             => JsonConvert.DeserializeObject<Players>(await HttpHelper.GetContentAsync(
-                $"{ApiUrl(region)}list/?application_id={key}&search={username}&type=exact"
+                $"{ApiUrl(region)}list/?application_id={key}&search={string.Join(",", usernames)}&type=exact"
             ).ConfigureAwait(false));
 
-        public async Task<PlayerPersonalData> GetPlayerDataAsync(Region region, string userid)
+        /// <summary>Get personal profile data for players</summary>
+        /// <param name="region">Server region to search</param>
+        /// <param name="userids">List of account ids</param>
+        public async Task<List<PlayerPersonalData>> GetPlayerDataAsync(Region region, List<string> userids)
         {
+            List<PlayerPersonalData> data = new List<PlayerPersonalData>();
             JToken dataToken = JToken.Parse(await HttpHelper.GetContentAsync(
-                $"{ApiUrl(region)}info/?application_id={key}&account_id={userid}").ConfigureAwait(false))["data"];
-            File.WriteAllText("./test.json", dataToken.ToString());
-            PlayerPersonalData playerData = dataToken[userid].ToObject<PlayerPersonalData>();
-            File.WriteAllText("./playertest.json", dataToken[userid].ToString());
-            return playerData;
+                $"{ApiUrl(region)}info/?application_id={key}&account_id={string.Join(",", userids)}").ConfigureAwait(false))["data"];
+            
+            foreach (string userid in userids)
+            {
+                data.Add(dataToken[userid].ToObject<PlayerPersonalData>());
+            }
+            //File.WriteAllText("./test.json", dataToken.ToString());
+            //PlayerPersonalData playerData = dataToken[userid].ToObject<PlayerPersonalData>();
+            //File.WriteAllText("./playertest.json", dataToken[userid].ToString());
+            return data;
         }
 
         string ApiUrl(Region r)
