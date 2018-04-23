@@ -3,10 +3,10 @@ Asynchronous Video Game data API wrapper. Built originally for my Hifumi discord
 ---
 > **Supported APIs**
 - [X] Steam
+- [X] World of Warships
 
 > **Future APIs**
 - [ ] osu!
-- [ ] World of Warships
 
 > **Add to Project**
 Clone repository and add with Visual Studio or through .NET CLI
