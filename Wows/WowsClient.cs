@@ -5,8 +5,6 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using System.IO; // REMOVE: Only needed for testing
-
 namespace HGame.Wows
 {
     public class WowsClient
@@ -14,7 +12,6 @@ namespace HGame.Wows
         readonly string key;
         public WowsClient(string clientId) => key = clientId;
 
-        // TODO: Api Calls
         /// <summary>Find a user's account id</summary>
         /// <param name="region">Server region to search</param>
         /// <param name="usernames">List of usernames</param>
@@ -36,9 +33,6 @@ namespace HGame.Wows
             {
                 data.Add(dataToken[userid].ToObject<PlayerPersonalData>());
             }
-            //File.WriteAllText("./test.json", dataToken.ToString());
-            //PlayerPersonalData playerData = dataToken[userid].ToObject<PlayerPersonalData>();
-            //File.WriteAllText("./playertest.json", dataToken[userid].ToString());
             return data;
         }
 
