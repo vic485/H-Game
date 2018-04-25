@@ -11,7 +11,7 @@ build:
 after_build:
 - ps: dotnet build
 artifacts:
-- path: bin\Release\netcoreapp2.0
+- path: bin\Release\netstandard2.0
   name: HGame-Build
 deploy:
 - provider: GitHub
