@@ -58,6 +58,30 @@ namespace HGame.Osu
             return users;
         }
 
+        /// <summary>Retrieve information about the top 100 scores of a specified beatmap</summary>
+        /// <param name="beatmapID">ID of the beatmap to return score information from</param>
+        /// <param name="name">Username of player to get score of (optional)</param>
+        /// <param name="mode">Game mode, default is osu!</param>
+        /// <param name="mods">Bitwise enum of a mod or mod combination</param>
+        /// <param name="type">Whether name is a username or ID (default is username)</param>
+        /// <param name="limit">Amount of results from the top to return (1 - 100, default is 50)</param>
+        public async Task<List<TopScore>> GetScoreAsync(string beatmapID, string name = null, GameMode mode = 0, GameMods? mods = null, UserType type = 0, int limit = 50)
+        {
+            string url = $"https://osu.ppy.sh/api/get_scores?k={key}&b={beatmapID}";
+            if (!string.IsNullOrWhiteSpace(name)) url += $"&u={name}";
+            url += $"&m={(int)mode}";
+            if (mods.HasValue) url += $"&mods={mods.Value}";
+            if (!string.IsNullOrWhiteSpace(name)) url += $"&type={GetType(type)}";
+            url += $"&limit={IntHelper.Clamp(limit, 1, 100)}";
+            JArray data = JArray.Parse(await HttpHelper.GetContentAsync(url).ConfigureAwait(false));
+
+            List<TopScore> scores = new List<TopScore>();
+            foreach (var score in data)
+                scores.Add(score.ToObject<TopScore>());
+
+            return scores;
+        }
+
         string GetType(UserType type)
         {
             switch (type)
@@ -81,5 +105,40 @@ namespace HGame.Osu
     {
         Username,
         UserId
+    }
+
+    public enum GameMods
+    {
+        None = 0,
+        NoFail = 1,
+        Easy = 2,
+        NoVideo = 4, // Not used anymore, but can be found on old plays like Mesita on b/78239
+        Hidden = 8,
+        HardRock = 16,
+        SuddenDeath = 32,
+        DoubleTime = 64,
+        Relax = 128,
+        HalfTime = 256,
+        Nightcore = 512, // Only set along with DoubleTime. i.e: NC only gives 576
+        Flashlight = 1024,
+        Autoplay = 2048,
+        SpunOut = 4096,
+        Relax2 = 8192,  // Autopilot?
+        Perfect = 16384, // Only set along with SuddenDeath. i.e: PF only gives 16416  
+        Key4 = 32768,
+        Key5 = 65536,
+        Key6 = 131072,
+        Key7 = 262144,
+        Key8 = 524288,
+        keyMod = Key4 | Key5 | Key6 | Key7 | Key8,
+        FadeIn = 1048576,
+        Random = 2097152,
+        LastMod = 4194304,
+        FreeModAllowed = NoFail | Easy | Hidden | HardRock | SuddenDeath | Flashlight | FadeIn | Relax | Relax2 | SpunOut | keyMod,
+        Key9 = 16777216,
+        Key10 = 33554432,
+        Key1 = 67108864,
+        Key3 = 134217728,
+        Key2 = 268435456
     }
 }
