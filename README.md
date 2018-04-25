@@ -1,6 +1,12 @@
 # H-Game
 Asynchronous Video Game data API wrapper. Built originally for my Hifumi discord bot.
 ---
+<p align="center">
+    <a href="https://ci.appveyor.com/project/vic485/h-game"><img src="https://ci.appveyor.com/api/projects/status/4juy12qspidj5270?svg=true"/></a>
+    <a href="https://www.codefactor.io/repository/github/vic485/h-game"><img src="https://www.codefactor.io/repository/github/vic485/h-game/badge" /></a>
+</p>
+
+---
 > **Supported APIs**
 - [X] Steam
 - [X] World of Warships

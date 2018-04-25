@@ -1,0 +1,25 @@
+version: 0.1.{build}
+skip_tags: true
+image: Visual Studio 2017 Preview
+configuration: Release
+shallow_clone: true
+clone_folder: C:\Development\HGame
+before_build:
+- ps: dotnet restore
+build:
+  verbosity: minimal
+after_build:
+- ps: dotnet build
+artifacts:
+- path: bin\Release\netcoreapp2.0
+  name: HGame-Build
+deploy:
+- provider: GitHub
+  auth_token:
+    secure: 9jwdByc7A3eYJMEDSxt1YIe1TyygqLj8q9zn8hCwoWKy6n3zvaN5wdGSo8UO72gQ
+  artifact: HGame-Build
+  draft: false
+  prerelease: true
+  force_update: true
+  on:
+    branch: master
