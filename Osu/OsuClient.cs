@@ -26,13 +26,16 @@ namespace HGame.Osu
         {
             // TODO: Check string building
             string mysqlDate = date.ToString("yyy-MM-dd HH:mm:ss");
-            string url = $"https://osu.ppy.sh/api/get_beatmaps?k={key}&since={mysqlDate}&s={beatmapSetID}&b={beatmapID}&u={user}&type={GetType(type)}";
+            string url = $"https://osu.ppy.sh/api/get_beatmaps?k={key}&since={Uri.EscapeDataString(mysqlDate)}&s={beatmapSetID}&b={beatmapID}&u={Uri.EscapeDataString(user)}&type={GetType(type)}";
             if (mode.HasValue) url += $"&m={(int)mode.Value}";
             if (mode.HasValue && mode.Value != GameMode.Osu) url += $"&a={IntHelper.Clamp(converted, 0, 1)}";
             if (!string.IsNullOrWhiteSpace(hash)) url += $"&h={hash}";
             url += $"&limit={IntHelper.Clamp(limit, 1, 500)}";
 
-            JArray data = JArray.Parse(await HttpHelper.GetContentAsync(url).ConfigureAwait(false));
+            string dataString = await HttpHelper.GetContentAsync(url).ConfigureAwait(false);
+            if (dataString == "[]") return null;
+            JArray data = JArray.Parse(dataString);
+
             List<Beatmap> beatmaps = new List<Beatmap>();
             foreach (var beatmap in data)
                 beatmaps.Add(beatmap.ToObject<Beatmap>());
@@ -48,8 +51,10 @@ namespace HGame.Osu
         public async Task<List<User>> GetUserAsync(string name, GameMode mode = 0, UserType type = 0, int eventDays = 1)
         {
             eventDays = IntHelper.Clamp(eventDays, 1, 31);
-            JArray data = JArray.Parse(await HttpHelper.GetContentAsync(
-                $"https://osu.ppy.sh/api/get_user?k={key}&u={name}&m={(int)mode}&type={GetType(type)}&event_days={eventDays}").ConfigureAwait(false));
+            string dataString = await HttpHelper.GetContentAsync(
+                $"https://osu.ppy.sh/api/get_user?k={key}&u={Uri.EscapeDataString(name)}&m={(int)mode}&type={GetType(type)}&event_days={eventDays}").ConfigureAwait(false);
+            if (dataString == "[]") return null;
+            JArray data = JArray.Parse(dataString);
 
             List<User> users = new List<User>();
             foreach (var user in data)
@@ -68,12 +73,14 @@ namespace HGame.Osu
         public async Task<List<TopScore>> GetScoreAsync(string beatmapID, string name = null, GameMode mode = 0, GameMods? mods = null, UserType type = 0, int limit = 50)
         {
             string url = $"https://osu.ppy.sh/api/get_scores?k={key}&b={beatmapID}";
-            if (!string.IsNullOrWhiteSpace(name)) url += $"&u={name}";
+            if (!string.IsNullOrWhiteSpace(name)) url += $"&u={Uri.EscapeDataString(name)}";
             url += $"&m={(int)mode}";
             if (mods.HasValue) url += $"&mods={mods.Value}";
             if (!string.IsNullOrWhiteSpace(name)) url += $"&type={GetType(type)}";
             url += $"&limit={IntHelper.Clamp(limit, 1, 100)}";
-            JArray data = JArray.Parse(await HttpHelper.GetContentAsync(url).ConfigureAwait(false));
+            string dataString = await HttpHelper.GetContentAsync(url).ConfigureAwait(false);
+            if (dataString == "[]") return null;
+            JArray data = JArray.Parse(dataString);
 
             List<TopScore> scores = new List<TopScore>();
             foreach (var score in data)

@@ -15,7 +15,7 @@ namespace HGame.Wows
         /// <summary>Find a user's account id</summary>
         /// <param name="region">Server region to search</param>
         /// <param name="usernames">List of usernames</param>
-        public async Task<Players> GetPlayersAsync(Region region, List<string> usernames)
+        public async Task<Players> GetPlayersAsync(Region region, string[] usernames)
             => JsonConvert.DeserializeObject<Players>(await HttpHelper.GetContentAsync(
                 $"{ApiUrl(region)}list/?application_id={key}&search={string.Join(",", usernames)}&type=exact"
             ).ConfigureAwait(false));
@@ -23,7 +23,7 @@ namespace HGame.Wows
         /// <summary>Get personal profile data for players</summary>
         /// <param name="region">Server region to search</param>
         /// <param name="userids">List of account ids</param>
-        public async Task<List<PlayerPersonalData>> GetPlayerDataAsync(Region region, List<string> userids)
+        public async Task<List<PlayerPersonalData>> GetPlayerDataAsync(Region region, string[] userids)
         {
             List<PlayerPersonalData> data = new List<PlayerPersonalData>();
             JToken dataToken = JToken.Parse(await HttpHelper.GetContentAsync(
